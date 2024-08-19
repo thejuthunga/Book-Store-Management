@@ -1,0 +1,17 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: author-application
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: BookStore
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true

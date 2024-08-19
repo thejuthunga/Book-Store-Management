@@ -1,0 +1,41 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: book-service-application
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: BookStore
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoint:
+    health:
+      show-details: ALWAYS
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authorCircuitBreaker:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 6s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED

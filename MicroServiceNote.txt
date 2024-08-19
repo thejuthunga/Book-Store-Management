@@ -1,0 +1,78 @@
+<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+            </dependency>
+        </dependencies>
+</dependencyManagement>
+Here I kept spring boot and spring cloud in DM(dependencyManagement) bcoz I am not forcing every
+sub module or service as spring project and spring cloud project.I just want every module
+should be maven project
+BOZ of these spring cloud in main pom I am able make eureka server as actual server and other as
+eureka client.
+
+-->dependencyManagement is to maintain the same version in my all sub modules/services.
+--> if not in every module I have to consciously maintain the versions.
+
+@LoadBalanced ->
+    The @LoadBalanced annotation is used in the context of Spring Cloud and Spring Boot
+    applications to enable client-side load balancing. It's typically applied to a RestTemplate
+    bean to ensure that requests to a microservice can be distributed across multiple instances
+    of that service.
+
+    Client-Side Load Balancing:
+    @LoadBalanced allows your client to perform load balancing, distributing requests among
+    various instances of a service. This is useful in microservices architectures where
+    multiple instances of a service are running.
+
+    Service Discovery Integration:
+    When used with a service discovery tool like Netflix Eureka, @LoadBalanced allows
+    RestTemplate to resolve service names into actual service instances. Instead of hardcoding
+    URLs, you can use logical service names, and the service discovery mechanism will provide
+    the list of instances.
+--------------------------------------------------
+spring-cloud-starter-openfeign --> for feign client
+--------------------------------------------------
+Now all the service in the same machine.If eureka service in different machine and our services is in
+diff machine in that case  I have to specify the server-url.
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+---------------------------------------------
+<dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId> --> this dependency making your module as apigateway
+        </dependency>
+APIGateWay run/support on Netty Sever so spring boot starter web can not be used instead of that we can use
+spring boot starter webflux.
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: customer-application --> is application name
+          uri: lb://CUSTOMER-APPLICATION --> this application name you gat in eureka server
+          predicates:
+            - Path=/api/v3/customer/** --> exact path of the particular controller which you want in service.
+        - id: fraud-check-application
+          uri: lb://FRAUD-CHECK-APPLICATION
+          predicates:
+            - Path=/api/v1/fraud-check/**
+---------------------------------------------
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true  --> these bcoz instead of register each service in api gateway and have to give service name in capitals
+          lower-case-service-id: true  --> no need to give service name in capitals you can give in small also
